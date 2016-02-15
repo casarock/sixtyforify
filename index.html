@@ -9,14 +9,13 @@
 </head>
 
 <body>
-    <textarea rows="20" cols="80" name="mytext" id="mytext"></textarea>
-    <button id="generate">DO IT!</button>
-    <br>
-    <br>
-    <br>
-
+    <div style="clear: all;">
+        <textarea rows="20" cols="80" name="mytext" id="mytext"></textarea>
+    </div>
+    <div style="clear: all;">
+        <button id="generate">DO IT!</button>
+    </div>
     <pre id="result">Result here...</pre>
-
     <script>
         (function sixtyFour() {
 
@@ -26,7 +25,6 @@
                     mySrc = generateSourceCode(myText);
 
                 $('#result').text(mySrc);
-
             });
 
             function generateSourceCode(str) {
@@ -37,9 +35,15 @@
                     src = "",
                     textDataLength = textData.length,
                     dataRowsSrc = Math.floor(textDataLength / chunk),
-                    srcProlog = "for y=0 to " + dataRowsSrc + ": for x=0 to " + (chunk - 1) + ": read a(x): print chr$(a(x));:next x: next y";
+                    srcProlog = "";
+
+                srcProlog += "for y=0 to " + dataRowsSrc + ": ";
+                srcProlog += "for x=0 to " + (chunk - 1) + ": ";
+                srcProlog += "read a(x): print chr$(a(x));:";
+                srcProlog += "next x: next y";
 
                 srcData.push(srcProlog);
+
                 for (var i = 0; i < textDataLength; i += chunk) {
                     tempArray = textData.slice(i, i + chunk);
 
@@ -65,27 +69,20 @@
             function generateData(str) {
                 var data = [];
                 str = str.toLowerCase();
-                str = str.replace("ö", "oe");
-                str = str.replace("ä", "ae");
-                str = str.replace("ß", "ss");
-                str = str.replace("ü", "ue");
-                str = str.replace("\r\n", "\n");
+                str = str.replace("ö", "oe").replace("ä", "ae")
+                         .replace("ß", "ss").replace("ü", "ue")
+                         .replace("\r\n", "\n");
 
                 for (var i = 0; i < str.length; i++) {
                     var letterCode;
 
                     switch (str.charAt(i)) {
-                        case '"':
-                            letterCode = 34;
-                            break;
-
                         case "\n":
                             letterCode = 13;
                             break;
 
                         default:
                             letterCode = letterMap[str.charAt(i)];
-
                     }
 
                     if (typeof letterCode === "undefined") {
@@ -108,9 +105,7 @@
 
                 return map;
             }
-
         })();
     </script>
 </body>
-
 </html>
