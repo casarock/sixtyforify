@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://code.jquery.com/jquery-2.1.4.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>JS Bin</title>
+</head>
+
+<body>
+    <textarea rows="20" cols="80" name="mytext" id="mytext"></textarea>
+    <button id="generate">DO IT!</button>
+    <br>
+    <br>
+    <br>
+
+    <pre id="result">Result here...</pre>
+
+    <script>
+        (function sixtyFour() {
+
+            var letterMap = generateAsciiMap();
+            $('#generate').on("click", function() {
+                var myText = $("#mytext").val(),
+                    mySrc = generateSourceCode(myText);
+
+                $('#result').text(mySrc);
+
+            });
+
+            function generateSourceCode(str) {
+                var tempArray, tempSrc,
+                    srcData = [],
+                    chunk = 10,
+                    textData = generateData(str),
+                    src = "",
+                    textDataLength = textData.length,
+                    dataRowsSrc = Math.floor(textDataLength / chunk),
+                    srcProlog = "for y=0 to " + dataRowsSrc + ": for x=0 to " + (chunk - 1) + ": read a(x): print chr$(a(x));:next x: next y";
+
+                srcData.push(srcProlog);
+                for (var i = 0; i < textDataLength; i += chunk) {
+                    tempArray = textData.slice(i, i + chunk);
+
+                    if (tempArray.length < chunk) {
+                        var missing = chunk - tempArray.length;
+                        for (var m = 0; m < missing; m++) {
+                            tempArray.push(32);
+                        }
+                    }
+
+                    tempSrc = "data " + tempArray.join(", ");
+                    srcData.push(tempSrc);
+                }
+
+                for (var j = 0; j < srcData.length; j++) {
+                    var lineNumber = (j + 1) * 10;
+                    src += lineNumber + " " + srcData[j] + "\n";
+                }
+
+                return src;
+            }
+
+            function generateData(str) {
+                var data = [];
+                str = str.toLowerCase();
+                str = str.replace("ö", "oe");
+                str = str.replace("ä", "ae");
+                str = str.replace("ß", "ss");
+                str = str.replace("ü", "ue");
+                str = str.replace("\r\n", "\n");
+
+                for (var i = 0; i < str.length; i++) {
+                    var letterCode;
+
+                    switch (str.charAt(i)) {
+                        case '"':
+                            letterCode = 34;
+                            break;
+
+                        case "\n":
+                            letterCode = 13;
+                            break;
+
+                        default:
+                            letterCode = letterMap[str.charAt(i)];
+
+                    }
+
+                    if (typeof letterCode === "undefined") {
+                        letterCode = 97;
+                    }
+
+                    data.push(letterCode);
+                }
+
+                return data;
+            }
+
+            function generateAsciiMap() {
+                var letters = " !\"#$%&'()*+,-./0123456789:;<=>?@abcdefghijklmnopqrstuvwxyz",
+                    map = {};
+
+                for (var i = 32; i <= 32 + letters.length - 1; i++) {
+                    map[letters.charAt(i - 32) + ""] = i;
+                }
+
+                return map;
+            }
+
+        })();
+    </script>
+</body>
+
+</html>
